@@ -7199,6 +7199,22 @@ const POWER_SHIELD_B64 =
       setTimeout(applyMobileLandscapeFit, 720);
     }
 
+    function triggerWeChatBottomBarHide() {
+      const ua = navigator.userAgent || "";
+      const inWeChat = /MicroMessenger/i.test(ua);
+      if (!inWeChat) return;
+      const vp = window.visualViewport;
+      const vw = Math.max(1, Math.floor((vp && vp.width) || window.innerWidth || 0));
+      const vh = Math.max(1, Math.floor((vp && vp.height) || window.innerHeight || 0));
+      if (vw <= vh) return; // 仅横屏尝试
+      // 经典 1px 滚动触发，尽量不影响布局
+      try {
+        const y = Math.max(1, window.scrollY || 0);
+        window.scrollTo(0, y + 1);
+        setTimeout(() => window.scrollTo(0, y), 60);
+      } catch (_) {}
+    }
+
     function runFlowWatchdog() {
       if (state.winner) return;
       // 1) claim 阶段无 pendingClaim 时，兜底继续结算，防止吃碰链路中断
@@ -10297,14 +10313,30 @@ const POWER_SHIELD_B64 =
       scheduleMobileFitReflow();
       updateSideSeatTransforms();
     });
-    window.addEventListener("pageshow", scheduleMobileFitReflow);
+    window.addEventListener("pageshow", () => {
+      scheduleMobileFitReflow();
+      setTimeout(triggerWeChatBottomBarHide, 80);
+      setTimeout(triggerWeChatBottomBarHide, 320);
+    });
     document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) scheduleMobileFitReflow();
+      if (!document.hidden) {
+        scheduleMobileFitReflow();
+        setTimeout(triggerWeChatBottomBarHide, 120);
+      }
     });
     if (window.visualViewport) {
       window.visualViewport.addEventListener("resize", scheduleMobileFitReflow);
       window.visualViewport.addEventListener("scroll", scheduleMobileFitReflow);
     }
+    let wechatNudgeDone = false;
+    const tryNudge = () => {
+      if (wechatNudgeDone) return;
+      wechatNudgeDone = true;
+      triggerWeChatBottomBarHide();
+      setTimeout(triggerWeChatBottomBarHide, 180);
+    };
+    document.addEventListener("touchstart", tryNudge, { passive: true });
+    document.addEventListener("click", tryNudge);
 
     els.gangBtn.addEventListener("click", humanGang);
     els.claimPassBtn.addEventListener("click", () => humanClaim("pass"));
