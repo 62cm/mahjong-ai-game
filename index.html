@@ -7157,9 +7157,11 @@ const POWER_SHIELD_B64 =
       const vh = Math.max(1, Math.floor((vp && vp.height) || window.innerHeight || document.documentElement.clientHeight || 0));
       const landscape = vw > vh;
       const ua = navigator.userAgent || "";
+      const inWeChat = /MicroMessenger/i.test(ua);
       const mobileUA = /iPhone|Android|Mobile|iPad|iPod|MicroMessenger/i.test(ua);
       const mobileLike = mobileUA || Math.min(vw, vh) <= 540 || vw <= 1024;
-      const shouldFit = landscape && mobileLike;
+      // 仅在微信内核启用强制缩放；Safari 走原生桌面布局，避免“只显示一半”
+      const shouldFit = landscape && mobileLike && inWeChat;
       if (!shouldFit) {
         document.body.classList.remove("mobile-landscape-fit");
         els.app.style.transform = "";
