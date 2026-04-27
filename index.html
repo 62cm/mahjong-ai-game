@@ -58,16 +58,28 @@
       justify-content: stretch;
       position: relative;
       background: #10131b;
+      overflow-x: hidden;
+      overflow-y: auto;
     }
     body.mobile-landscape-fit .app {
       max-width: none;
       margin: 0;
-      position: absolute;
+      position: fixed;
       left: 0;
       top: 0;
       transform-origin: top left;
       will-change: transform;
       overflow: hidden;
+      contain: layout paint size;
+    }
+    html.wechat-landscape-nudge,
+    body.wechat-landscape-nudge {
+      min-height: calc(100% + 2px);
+    }
+    body.wechat-landscape-nudge::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
     }
     .panel {
       background: linear-gradient(180deg, var(--panel), #151c2a);
@@ -7160,12 +7172,15 @@ const POWER_SHIELD_B64 =
       const vh = Math.max(1, Math.floor((vp && vp.height) || window.innerHeight || document.documentElement.clientHeight || 0));
       const landscape = vw > vh;
       const ua = navigator.userAgent || "";
+      const inWeChat = /MicroMessenger/i.test(ua);
       const mobileUA = /iPhone|Android|Mobile|iPad|iPod|MicroMessenger/i.test(ua);
       const mobileLike = mobileUA || Math.min(vw, vh) <= 540 || vw <= 1024;
       // 手机横屏统一走桌面等比适配（Safari/微信同一套）
       const shouldFit = landscape && mobileLike;
       if (!shouldFit) {
         document.body.classList.remove("mobile-landscape-fit");
+        document.body.classList.remove("wechat-landscape-nudge");
+        document.documentElement.classList.remove("wechat-landscape-nudge");
         els.app.style.transform = "";
         els.app.style.left = "";
         els.app.style.top = "";
@@ -7185,6 +7200,13 @@ const POWER_SHIELD_B64 =
       // 贴底：让底部工具栏更容易收起，提升可视高度
       const offsetY = Math.max(pad, vh - baseH * scale - pad);
       document.body.classList.add("mobile-landscape-fit");
+      if (inWeChat) {
+        document.body.classList.add("wechat-landscape-nudge");
+        document.documentElement.classList.add("wechat-landscape-nudge");
+      } else {
+        document.body.classList.remove("wechat-landscape-nudge");
+        document.documentElement.classList.remove("wechat-landscape-nudge");
+      }
       els.app.style.width = `${baseW}px`;
       els.app.style.height = `${baseH}px`;
       els.app.style.left = `${Math.floor(viewLeft + offsetX)}px`;
@@ -7209,9 +7231,7 @@ const POWER_SHIELD_B64 =
       if (vw <= vh) return; // 仅横屏尝试
       // 经典 1px 滚动触发，尽量不影响布局
       try {
-        const y = Math.max(1, window.scrollY || 0);
-        window.scrollTo(0, y + 1);
-        setTimeout(() => window.scrollTo(0, y), 60);
+        window.scrollTo(0, 1);
       } catch (_) {}
     }
 
