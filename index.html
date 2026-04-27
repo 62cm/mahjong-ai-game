@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>超 X 麻</title>
   <style>
     :root {
@@ -23,6 +23,7 @@
     * { box-sizing: border-box; }
     html {
       height: 100%;
+      background: #10131b;
     }
     body {
       margin: 0;
@@ -37,6 +38,7 @@
       flex-direction: column;
       padding: 14px;
       padding-bottom: 14px;
+      overscroll-behavior: none;
     }
     .app {
       flex: 1 1 auto;
@@ -55,6 +57,7 @@
       align-items: stretch;
       justify-content: stretch;
       position: relative;
+      background: #10131b;
     }
     body.mobile-landscape-fit .app {
       max-width: none;
@@ -7188,6 +7191,13 @@ const POWER_SHIELD_B64 =
       els.app.style.transform = `scale(${scale})`;
     }
 
+    function scheduleMobileFitReflow() {
+      applyMobileLandscapeFit();
+      setTimeout(applyMobileLandscapeFit, 80);
+      setTimeout(applyMobileLandscapeFit, 260);
+      setTimeout(applyMobileLandscapeFit, 720);
+    }
+
     function runFlowWatchdog() {
       if (state.winner) return;
       // 1) claim 阶段无 pendingClaim 时，兜底继续结算，防止吃碰链路中断
@@ -10279,12 +10289,20 @@ const POWER_SHIELD_B64 =
       if (e.key === "Escape" && els.introMask && els.introMask.classList.contains("show")) closeIntro();
     });
     window.addEventListener("resize", () => {
-      applyMobileLandscapeFit();
+      scheduleMobileFitReflow();
       updateSideSeatTransforms();
     });
+    window.addEventListener("orientationchange", () => {
+      scheduleMobileFitReflow();
+      updateSideSeatTransforms();
+    });
+    window.addEventListener("pageshow", scheduleMobileFitReflow);
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) scheduleMobileFitReflow();
+    });
     if (window.visualViewport) {
-      window.visualViewport.addEventListener("resize", applyMobileLandscapeFit);
-      window.visualViewport.addEventListener("scroll", applyMobileLandscapeFit);
+      window.visualViewport.addEventListener("resize", scheduleMobileFitReflow);
+      window.visualViewport.addEventListener("scroll", scheduleMobileFitReflow);
     }
 
     els.gangBtn.addEventListener("click", humanGang);
