@@ -1688,6 +1688,88 @@
       align-items: center;
       gap: 8px;
     }
+    .choice-mask {
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 9, 16, 0.72);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1360;
+      padding: 12px;
+    }
+    .choice-mask.show { display: flex; }
+    .choice-panel {
+      width: min(420px, 92vw);
+      background: #1a2233;
+      border: 1px solid #4a6397;
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .choice-title {
+      font-weight: 700;
+      font-size: 15px;
+      color: #e9f0ff;
+    }
+    .choice-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .choice-actions .sort-mini {
+      min-width: 78px;
+    }
+    .choice-option {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 30px;
+    }
+    .choice-option-meta {
+      color: #d7e5ff;
+      font-weight: 700;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .choice-owner-card {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 30px;
+    }
+    .choice-owner-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 1px solid #5d76ad;
+      background: #2a3758;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex: 0 0 auto;
+    }
+    .choice-owner-meta {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1.05;
+      gap: 3px;
+    }
+    .choice-owner-name {
+      color: #e8f0ff;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .choice-owner-count {
+      color: #a9bcda;
+      font-size: 11px;
+      font-weight: 600;
+    }
     .intro-mood-row {
       display: flex;
       align-items: flex-start;
@@ -2233,15 +2315,16 @@
           <button type="button" id="powerHintToggle" class="sort-mini" style="padding:2px 8px; font-size:11px;">展开说明</button>
         </div>
         <div class="powers">
-          <button id="peekBtn" type="button" class="warn power-card" aria-label="天眼窥牌，剩余3次"><span class="power-name">天眼窥牌</span><span class="power-count"><span class="power-tick">/</span><span class="power-tick">/</span><span class="power-tick">/</span></span></button>
-          <button id="rerollBtn" type="button" class="warn power-card" aria-label="改运换摸，剩余3次"><span class="power-name">改运换摸</span><span class="power-count"><span class="power-tick">/</span><span class="power-tick">/</span><span class="power-tick">/</span></span></button>
-          <button id="shieldBtn" type="button" class="warn power-card" aria-label="静默结界，剩余3次"><span class="power-name">静默结界</span><span class="power-count"><span class="power-tick">/</span><span class="power-tick">/</span><span class="power-tick">/</span></span></button>
+          <button id="peekBtn" type="button" class="warn power-card" aria-label="天眼窥牌，剩余0次"><span class="power-name">天眼窥牌</span><span class="power-count"><span class="power-tick power-tick--gone">/</span><span class="power-tick power-tick--gone">/</span><span class="power-tick power-tick--gone">/</span></span></button>
+          <button id="rerollBtn" type="button" class="warn power-card" aria-label="改运换摸，剩余0次"><span class="power-name">改运换摸</span><span class="power-count"><span class="power-tick power-tick--gone">/</span><span class="power-tick power-tick--gone">/</span><span class="power-tick power-tick--gone">/</span></span></button>
+          <button id="shieldBtn" type="button" class="warn power-card" aria-label="静默结界，剩余0次"><span class="power-name">静默结界</span><span class="power-count"><span class="power-tick power-tick--gone">/</span><span class="power-tick power-tick--gone">/</span><span class="power-tick power-tick--gone">/</span></span></button>
         </div>
         <div id="powerHintWrap" class="hint power-hint-wrap collapsed">
-          每张牌右侧竖排「/」表示剩余次数（共3次）；用一次会先抖动再少一条，用尽后该牌隐藏。<br>
-          天眼：看牌墙顶部3张。<br>
-          改运换摸：轮到你时（摸牌或出牌阶段）随时可用，无张数限制；每次从牌墙多摸一张。若手牌多于13张，须打到剩13张后本回合才能结束（AI吃碰杠和结算后仍适用）。<br>
-          静默结界：持续到你下次出牌前，AI不能碰/吃/和你打出的牌。
+          新规则：每张能力牌最多3格；初始无牌（0格时卡牌隐藏）。你每胡一局可三选一充能+1。<br>
+          天眼窥牌：可选任意一家AI，直接翻开其全部暗牌。<br>
+          改运换摸：轮到你时可用；若牌墙中存在你的可胡牌，本次必定摸到和张。<br>
+          静默结界：使用时先弃3张，再从场上任意AI的明刻/杠中选择一副，占为己有。<br>
+          若你连续3局未胡：随机给某一张能力牌+1格。
         </div>
       </div>
       <div id="readyZone" class="zone ready-zone">
@@ -2281,6 +2364,12 @@
       <div id="settlementDesc" class="hint"></div>
       <div id="settlementFans" class="hint" style="margin-top:8px;"></div>
       <div id="settlementScores" class="settlement-grid"></div>
+    </div>
+  </div>
+  <div id="choiceMask" class="choice-mask" aria-hidden="true">
+    <div class="choice-panel" role="dialog" aria-modal="true" aria-labelledby="choiceTitle">
+      <div id="choiceTitle" class="choice-title">请选择</div>
+      <div id="choiceActions" class="choice-actions"></div>
     </div>
   </div>
 
@@ -2994,10 +3083,14 @@
       handNo: 1,
       pendingClaim: null,
       power: {
-        peek: 3,
-        reroll: 3,
-        shield: 3
+        peek: 0,
+        reroll: 0,
+        shield: 0
       },
+      noHuStreak: 0,
+      peekRevealSeat: -1,
+      peekRevealToken: "",
+      disableSenseiBlockOnce: false,
       shieldActiveUntilPlayerDiscard: false,
       humanDrew: false,
       currentDrawMeta: { player: -1, reason: "none", wallAfter: 0 },
@@ -3082,6 +3175,9 @@
       settlementDesc: document.getElementById("settlementDesc"),
       settlementFans: document.getElementById("settlementFans"),
       settlementScores: document.getElementById("settlementScores"),
+      choiceMask: document.getElementById("choiceMask"),
+      choiceTitle: document.getElementById("choiceTitle"),
+      choiceActions: document.getElementById("choiceActions"),
       leaderboard: document.getElementById("leaderboard"),
       huDebugBtn: document.getElementById("huDebugBtn"),
       validateFansBtn: document.getElementById("validateFansBtn"),
@@ -3105,6 +3201,11 @@
 
     const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
     const rand = (n) => Math.floor(Math.random() * n);
+    const POWER_KIND_NAME = {
+      peek: "天眼窥牌",
+      reroll: "改运换摸",
+      shield: "静默结界"
+    };
     const PLAY_PACE_MULT = 3;
 const POWER_REROLL_B64 =
   '/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAA' +
@@ -7559,9 +7660,7 @@ const POWER_SHIELD_B64 =
         }
       }
       if (state.aiLevel === "sensei") {
-        // 老师傅：玩家听牌后，优先把玩家和张“吃进自己手里”，减少玩家自摸机会。
-        const humanSet = rigCtx && rigCtx.humanWinSet ? rigCtx.humanWinSet : null;
-        if (humanSet && humanSet.has(tile)) score += 120;
+        // 老师傅：摸牌仅用于自身构牌推进，不再通过换牌直接针对玩家阻断。
       }
       return score;
     }
@@ -7664,7 +7763,10 @@ const POWER_SHIELD_B64 =
         const cls = isLatest ? "latest-discard" : "";
         return `<span class="tile-stack"><span class="${cls ? `tile latest-discard mj-mini` : "tile mj-mini"}"><span class="mj"><span class="mj-main">${tileGlyph(t)}</span></span></span></span>`;
       }).join("");
-      const hiddenHand = new Array(Math.min(p.hand.length, 14)).fill(0).map(() => tileBackHtml(true)).join("");
+      const revealByPeek = i !== 0 && i === Number(state.peekRevealSeat || -1);
+      const hiddenHand = revealByPeek
+        ? p.hand.slice(0, 14).map((t) => tileFaceHtml(t, true)).join("")
+        : new Array(Math.min(p.hand.length, 14)).fill(0).map(() => tileBackHtml(true)).join("");
       const darkText = `${hiddenHand || "无"}`;
       const darkLabel = "暗牌:";
       const mergedBox = i === 0
@@ -7977,11 +8079,46 @@ const POWER_SHIELD_B64 =
       els.rerollBtn.disabled = !canHumanUseRerollPower() || rerollBusy;
       els.shieldBtn.disabled =
         state.power.shield <= 0 || !humanTurn || state.shieldActiveUntilPlayerDiscard || shieldBusy;
-      els.nextHandBtn.disabled = !state.allowTestHand;
+      els.nextHandBtn.disabled = false;
       if (els.nextHandBtn) {
-        els.nextHandBtn.title = state.allowTestHand
-          ? "新开一局并换为测试牌形（首局结算后将锁定，需点「重开」）"
-          : "首局已结算：请点「重开」后再使用测试局";
+        els.nextHandBtn.title = "新开一局并换为测试牌形；每次点击三张能力牌各+1（上限3）";
+      }
+    }
+
+    function chargePowerCard(kind, amount = 1, reason = "") {
+      if (!state.power || !Object.prototype.hasOwnProperty.call(state.power, kind)) return false;
+      const add = Math.max(0, Number(amount) || 0);
+      if (!add) return false;
+      const before = clamp(Number(state.power[kind]) || 0, 0, POWER_MAX_USES);
+      const after = clamp(before + add, 0, POWER_MAX_USES);
+      state.power[kind] = after;
+      if (after > before && reason) {
+        addLog(`超能充能：${POWER_KIND_NAME[kind]} +${after - before}（${reason}）。`, "ok");
+      }
+      return after > before;
+    }
+
+    async function onHandFinishedForPower(didHumanHu) {
+      if (didHumanHu) {
+        if (state.noHuStreak > 0) addLog("你本局胡牌：连续未胡计数清零。", "ok");
+        state.noHuStreak = 0;
+        const kind = await choosePowerChargeKindDialog();
+        if (kind) {
+          if (!chargePowerCard(kind, 1, "胡牌奖励（三选一）")) {
+            addLog(`${POWER_KIND_NAME[kind]} 已满3格，无法继续充能。`, "warn");
+          }
+        } else {
+          addLog("胡牌充能已取消。", "warn");
+        }
+        render();
+        return;
+      }
+      state.noHuStreak += 1;
+      if (state.noHuStreak % 3 !== 0) return;
+      const pool = ["peek", "reroll", "shield"];
+      const kind = pool[rand(pool.length)];
+      if (!chargePowerCard(kind, 1, "三局连续未胡随机奖励")) {
+        addLog(`三连未胡触发：随机到 ${POWER_KIND_NAME[kind]}，但该牌已满3格。`, "warn");
       }
     }
 
@@ -8527,25 +8664,31 @@ const POWER_SHIELD_B64 =
           }
         }
       }
-      // 老师傅：当玩家已听牌时，有概率把玩家即将摸到的和张从牌墙顶换走。
+      // 老师傅规则：仅当玩家已听牌且门前副露>=3时，才允许在玩家摸牌阶段换墙顶阻胡。
       if (i === 0 && state.aiLevel === "sensei" && (reason === "normal" || reason === "gang")) {
-        const humanWinSet = buildHumanWinTileSet();
-        if (humanWinSet.size > 0 && state.wall.length > 1) {
-          const topIdx = state.wall.length - 1;
-          const topTile = state.wall[topIdx];
-          if (humanWinSet.has(topTile) && Math.random() < 0.62) {
-            let swapIdx = -1;
-            for (let k = state.wall.length - 2; k >= 0; k--) {
-              const cand = state.wall[k];
-              if (!humanWinSet.has(cand)) {
-                swapIdx = k;
-                break;
+        if (state.disableSenseiBlockOnce) {
+          state.disableSenseiBlockOnce = false;
+        } else {
+          const humanMelds = (state.players[0] && Array.isArray(state.players[0].melds)) ? state.players[0].melds.length : 0;
+          const humanWinSet = buildHumanWinTileSet();
+          const humanReady = humanWinSet.size > 0;
+          if (humanMelds >= 3 && humanReady && state.wall.length > 1) {
+            const topIdx = state.wall.length - 1;
+            const topTile = state.wall[topIdx];
+            if (humanWinSet.has(topTile) && Math.random() < 0.26) {
+              let swapIdx = -1;
+              for (let k = state.wall.length - 2; k >= 0; k--) {
+                const cand = state.wall[k];
+                if (!humanWinSet.has(cand)) {
+                  swapIdx = k;
+                  break;
+                }
               }
-            }
-            if (swapIdx >= 0) {
-              const tmp = state.wall[topIdx];
-              state.wall[topIdx] = state.wall[swapIdx];
-              state.wall[swapIdx] = tmp;
+              if (swapIdx >= 0) {
+                const tmp = state.wall[topIdx];
+                state.wall[topIdx] = state.wall[swapIdx];
+                state.wall[swapIdx] = tmp;
+              }
             }
           }
         }
@@ -8576,6 +8719,9 @@ const POWER_SHIELD_B64 =
       state.phase = "draw";
       state.winner = null;
       state.pendingClaim = null;
+      state.peekRevealSeat = -1;
+      state.peekRevealToken = "";
+      state.disableSenseiBlockOnce = false;
       state.shieldActiveUntilPlayerDiscard = false;
       state.humanDrew = false;
       state.currentDrawMeta = { player: -1, reason: "none", wallAfter: 0 };
@@ -8959,6 +9105,34 @@ const POWER_SHIELD_B64 =
       return new Set(getPlayerWinningTiles(0, need).map((w) => w.tile));
     }
 
+    function senseiDiscardPenalty(i, tile, senseiHumanWinSet) {
+      if (i === 0) return 0;
+      const humanMelds = (state.players[0] && Array.isArray(state.players[0].melds)) ? state.players[0].melds.length : 0;
+      // 0副：不规避
+      if (humanMelds <= 0) return 0;
+      const h = state.players[0] && Array.isArray(state.players[0].hand) ? state.players[0].hand : [];
+      const cm = countMap(h);
+      const humanCanGang = (cm[tile] || 0) >= 3;
+      const humanCanPeng = (cm[tile] || 0) >= 2;
+      const humanCanChi = ((i + 1) % 4 === 0) && canChi(h, tile);
+
+      // 1~2副：仅规避吃碰杠（不规避胡），且优先级低于自身成牌推进
+      if (humanMelds < 3) {
+        let penalty = 0;
+        if (humanCanGang) penalty -= humanMelds === 1 ? 420 : 760;
+        else if (humanCanPeng) penalty -= humanMelds === 1 ? 300 : 560;
+        if (humanCanChi) penalty -= humanMelds === 1 ? 220 : 420;
+        return penalty;
+      }
+      // 3副及以上：规避胡 + 吃碰杠
+      let penalty = 0;
+      if (senseiHumanWinSet && senseiHumanWinSet.has(tile)) penalty -= 9800;
+      if (humanCanGang) penalty -= 2600; // 明杠
+      else if (humanCanPeng) penalty -= 1800; // 碰
+      if (humanCanChi) penalty -= 1300; // 吃
+      return penalty;
+    }
+
     function steadyPengTempoScore(i, tile, humanWinSet = null) {
       if (state.aiLevel !== "steady" || i === 0) return -999999;
       const hand = state.players[i].hand;
@@ -9034,10 +9208,9 @@ const POWER_SHIELD_B64 =
           if (steadyHumanWinSet.has(t)) score -= 520;
           else score += 16;
         }
-        if (sensei && i !== 0 && senseiHumanWinSet && senseiHumanWinSet.size > 0) {
-          // 老师傅：玩家听牌后，强制规避打出玩家和张。
-          if (senseiHumanWinSet.has(t)) score -= 9600;
-          else score += 28;
+        if (sensei && i !== 0) {
+          // 老师傅：按玩家门前副露数分档提升规避，只在弃牌阶段反制。
+          score += senseiDiscardPenalty(i, t, senseiHumanWinSet);
         }
         if (zuoju && i !== 0) {
           score += zuojuAllyFeedBonus(i, t, zuojuMateWinSets);
@@ -9781,6 +9954,7 @@ const POWER_SHIELD_B64 =
         const alive = [0, 1, 2, 3].filter((i) => !state.bloodWinners.includes(i));
         if (state.bloodWinners.length >= 3 || alive.length <= 1) {
           state.winner = state.bloodWinners[0] ?? winner;
+          onHandFinishedForPower(state.bloodWinners.includes(0));
           settleNextDealer();
           addLog("血战到底：本局结束（已达三家胡牌或仅剩一家未胡）。", "ok");
           render();
@@ -9796,17 +9970,13 @@ const POWER_SHIELD_B64 =
         return;
       }
       state.winner = winner;
+      onHandFinishedForPower(winner === 0);
       settleNextDealer();
       if (dealerWon && state.dealerStreak >= 2) {
         showFx(`连庄 x${state.dealerStreak}`, "streak");
         playSfx("streak");
       }
-      if (state.allowTestHand) {
-        state.allowTestHand = false;
-        addLog("本局结束：可点「关闭」续局。「测试局」已锁定，需点「重开」后再用。", "ok");
-      } else {
-        addLog("本局结束：可点「关闭」续局。", "ok");
-      }
+      addLog("本局结束：可点「关闭」续局。", "ok");
       render();
     }
 
@@ -9857,11 +10027,8 @@ const POWER_SHIELD_B64 =
         const huazhuTxt = huazhuList.length ? huazhuList.map((i) => PLAYER_NAMES[i]).join("、") : "无";
         addLog(`【血战流局总结】花猪:${huazhuTxt}；听牌:${readyTxt}；未听牌:${noReadyTxt}；退杠笔数:${state.gangLedger.length}`, "warn");
       }
-      if (state.allowTestHand) {
-        state.allowTestHand = false;
-        addLog("牌墙耗尽，流局。「测试局」已锁定，需点「重开」后再用。", "warn");
-      }
       addLog("牌墙耗尽，本局流局；当场重洗发牌（圈风/局数/庄家/分数不变）。", "warn");
+      onHandFinishedForPower(false);
       startHand(true);
     }
 
@@ -9912,13 +10079,301 @@ const POWER_SHIELD_B64 =
       render();
     }
 
-    function usePeekPower() {
+    let choiceDialogResolver = null;
+
+    function closeChoiceDialog(result = null) {
+      if (!els.choiceMask) return;
+      els.choiceMask.classList.remove("show");
+      els.choiceMask.setAttribute("aria-hidden", "true");
+      if (els.choiceActions) els.choiceActions.innerHTML = "";
+      const resolver = choiceDialogResolver;
+      choiceDialogResolver = null;
+      if (typeof resolver === "function") resolver(result);
+    }
+
+    function openChoiceDialog(title, options = [], cancelText = "取消") {
+      return new Promise((resolve) => {
+        if (!els.choiceMask || !els.choiceTitle || !els.choiceActions) {
+          resolve(options.length ? options[0].value : null);
+          return;
+        }
+        if (choiceDialogResolver) closeChoiceDialog(null);
+        choiceDialogResolver = resolve;
+        els.choiceTitle.textContent = title || "请选择";
+        els.choiceActions.innerHTML = "";
+        options.forEach((opt) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "sort-mini";
+          if (typeof opt.html === "string" && opt.html.trim()) {
+            btn.innerHTML = opt.html;
+          } else {
+            btn.textContent = String(opt.label || opt.value || "");
+          }
+          btn.addEventListener("click", () => {
+            closeChoiceDialog(opt.value);
+          });
+          els.choiceActions.appendChild(btn);
+        });
+        const cancel = document.createElement("button");
+        cancel.type = "button";
+        cancel.className = "sort-mini";
+        cancel.textContent = cancelText;
+        cancel.addEventListener("click", () => closeChoiceDialog(null));
+        els.choiceActions.appendChild(cancel);
+        els.choiceMask.classList.add("show");
+        els.choiceMask.setAttribute("aria-hidden", "false");
+      });
+    }
+
+    async function openPeekChoiceDialog(choices) {
+      const options = choices.map((seat) => ({ label: PLAYER_NAMES[seat], value: seat }));
+      return openChoiceDialog("天眼窥牌：选择要翻开的AI", options);
+    }
+
+    async function choosePowerChargeKindDialog() {
+      return openChoiceDialog(
+        "胡牌奖励：选择一张能力牌 +1",
+        [
+          { value: "peek", html: `<span class="choice-option"><span class="choice-option-meta">天眼窥牌</span></span>` },
+          { value: "reroll", html: `<span class="choice-option"><span class="choice-option-meta">改运换摸</span></span>` },
+          { value: "shield", html: `<span class="choice-option"><span class="choice-option-meta">静默结界</span></span>` }
+        ]
+      );
+    }
+
+    async function chooseThreeDiscardIndicesDialog(handTiles) {
+      const picked = [];
+      while (picked.length < 3) {
+        const options = handTiles
+          .map((t, idx) => ({ t, idx }))
+          .filter((x) => !picked.includes(x.idx))
+          .map((x) => ({
+            value: x.idx,
+            html: `<span class="choice-option"><span class="choice-option-meta">${x.idx + 1}.</span>${tileFaceHtml(x.t, true)}</span>`
+          }));
+        const choose = await openChoiceDialog(
+          `静默结界：选择第${picked.length + 1}张要弃掉的手牌`,
+          options
+        );
+        if (!Number.isInteger(choose)) return null;
+        picked.push(choose);
+      }
+      return picked;
+    }
+
+    function removeOneFromHand(hand, tile) {
+      const idx = hand.indexOf(tile);
+      if (idx < 0) return false;
+      hand.splice(idx, 1);
+      return true;
+    }
+
+    function pickShieldStealFromHands(owner) {
+      const p = state.players[owner];
+      if (!p || !Array.isArray(p.hand) || p.hand.length < 1) return null;
+      const ownMap = countMap(p.hand);
+      for (const [tile, cnt] of Object.entries(ownMap)) {
+        if (cnt >= 3) return { tiles: [tile, tile, tile], from: [owner, owner, owner], mode: "暗刻直取" };
+      }
+      for (const tile of p.hand) {
+        const from = [owner];
+        const tiles = [tile];
+        for (let i = 1; i < 4; i++) {
+          if (i === owner) continue;
+          if (isBloodOut(i)) continue;
+          const m = countMap(state.players[i].hand || []);
+          const cnt = Math.min(2 - (tiles.length - 1), m[tile] || 0);
+          for (let k = 0; k < cnt; k++) {
+            tiles.push(tile);
+            from.push(i);
+            if (tiles.length >= 3) break;
+          }
+          if (tiles.length >= 3) break;
+        }
+        if (tiles.length === 3) return { tiles, from, mode: "跨家拼暗刻" };
+      }
+      const hand = [...p.hand];
+      const take = Math.min(3, hand.length);
+      if (take < 1) return null;
+      const tiles = [];
+      const from = [];
+      for (let k = 0; k < take; k++) {
+        const idx = rand(hand.length);
+        const t = hand.splice(idx, 1)[0];
+        if (!t) continue;
+        tiles.push(t);
+        from.push(owner);
+      }
+      return { tiles, from, mode: "随机三张" };
+    }
+
+    function buildShieldMeldCandidates(owner) {
+      const p = state.players[owner];
+      if (!p || !Array.isArray(p.melds)) return [];
+      const out = [];
+      for (let i = 0; i < p.melds.length; i++) {
+        const meld = p.melds[i];
+        if (!Array.isArray(meld) || meld.length < 3) continue;
+        out.push({ owner, meldIndex: i, meld: [...meld] });
+      }
+      return out;
+    }
+
+    async function chooseShieldTargetOwner() {
+      const owners = [1, 2, 3].filter((i) => !isBloodOut(i));
+      if (!owners.length) return null;
+      return openChoiceDialog(
+        "静默结界：选择目标玩家",
+        owners.map((i) => {
+          const p = state.players[i] || { hand: [] };
+          const mood = getPlayerMood(i) || { emoji: "🙂" };
+          const handCount = Array.isArray(p.hand) ? p.hand.length : 0;
+          return {
+            value: i,
+            html:
+              `<span class="choice-owner-card">` +
+              `<span class="choice-owner-avatar">${mood.emoji || "🙂"}</span>` +
+              `<span class="choice-owner-meta">` +
+              `<span class="choice-owner-name">${PLAYER_NAMES[i]}</span>` +
+              `<span class="choice-owner-count">手牌 ${handCount} 张</span>` +
+              `</span>` +
+              `</span>`
+          };
+        })
+      );
+    }
+
+    async function chooseShieldSourceKind() {
+      return openChoiceDialog(
+        "静默结界：选择夺取来源",
+        [
+          { value: "meld", html: `<span class="choice-option"><span class="choice-option-meta">门前</span></span>` },
+          { value: "hand", html: `<span class="choice-option"><span class="choice-option-meta">手牌</span></span>` }
+        ]
+      );
+    }
+
+    async function chooseShieldMeldCandidate(candidates) {
+      const options = candidates.map((c, idx) => ({
+        value: idx,
+        html: `<span class="choice-option"><span class="choice-option-meta">${idx + 1}. ${PLAYER_NAMES[c.owner]}</span>${c.meld.map((t) => tileFaceHtml(t, true)).join("")}</span>`
+      }));
+      return openChoiceDialog("静默结界：选择要夺取的副露", options);
+    }
+
+    function openPeekChoiceDialogLegacy(choices, onPick) {
+      // kept for backward compatibility in case of old call sites
+      if (!els.choiceMask || !els.choiceTitle || !els.choiceActions) {
+        if (choices && choices.length && typeof onPick === "function") onPick(choices[0]);
+        return;
+      }
+      els.choiceTitle.textContent = "天眼窥牌：选择要翻开的AI";
+      els.choiceActions.innerHTML = "";
+      choices.forEach((seat) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "sort-mini";
+        btn.textContent = PLAYER_NAMES[seat];
+        btn.addEventListener("click", () => {
+          closeChoiceDialog();
+          if (typeof onPick === "function") onPick(seat);
+        });
+        els.choiceActions.appendChild(btn);
+      });
+      const cancel = document.createElement("button");
+      cancel.type = "button";
+      cancel.className = "sort-mini";
+      cancel.textContent = "取消";
+      cancel.addEventListener("click", () => {
+        closeChoiceDialog();
+      });
+      els.choiceActions.appendChild(cancel);
+      els.choiceMask.classList.add("show");
+      els.choiceMask.setAttribute("aria-hidden", "false");
+    }
+
+    function canTileMakeChiWithHand(tile, hand) {
+      if (!tile || tile.length !== 2) return false;
+      const n = Number(tile[0]);
+      if (!Number.isFinite(n)) return false;
+      const s = tile[1];
+      const m = countMap(hand || []);
+      const has = (x) => (m[x] || 0) > 0;
+      return (
+        (n >= 3 && has(`${n - 2}${s}`) && has(`${n - 1}${s}`)) ||
+        (n >= 2 && n <= 8 && has(`${n - 1}${s}`) && has(`${n + 1}${s}`)) ||
+        (n <= 7 && has(`${n + 1}${s}`) && has(`${n + 2}${s}`))
+      );
+    }
+
+    function rerollTilePriority(tile, hand, melds, needFan) {
+      const testHand = [...hand, tile];
+      const fanInfo = calcFan(testHand, getHuOptions(0, true, { winTile: tile }));
+      if (canHu(testHand, melds) && canReachHuFan(fanInfo.fan)) return { level: 5, tag: "胡" };
+
+      const cnt = countMap(hand);
+      const same = cnt[tile] || 0;
+      const hasPungMeld = (melds || []).some(
+        (m) => Array.isArray(m) && m.length === 3 && m[0] === m[1] && m[1] === m[2] && m[0] === tile
+      );
+      if (same >= 3 || (hasPungMeld && same >= 1)) return { level: 4, tag: "杠" };
+      if (same >= 2) return { level: 3, tag: "碰" };
+      if (canTileMakeChiWithHand(tile, hand)) return { level: 2, tag: "吃" };
+      if (same >= 1) return { level: 1, tag: "对子" };
+      return { level: 0, tag: "" };
+    }
+
+    function pickRerollBestWallTile() {
+      if (!state.wall.length) return { picked: false, level: 0, tag: "" };
+      const hand = [...(state.players[0] && state.players[0].hand ? state.players[0].hand : [])];
+      const melds = [...(state.players[0] && state.players[0].melds ? state.players[0].melds : [])];
+      const need = normalizeMinFan(state.minFan);
+      let bestIdx = -1;
+      let bestLevel = -1;
+      let bestTag = "";
+      for (let i = state.wall.length - 1; i >= 0; i--) {
+        const t = state.wall[i];
+        const pri = rerollTilePriority(t, hand, melds, need);
+        if (pri.level > bestLevel) {
+          bestLevel = pri.level;
+          bestTag = pri.tag;
+          bestIdx = i;
+          if (bestLevel >= 5) break;
+        }
+      }
+      if (bestIdx < 0 || bestLevel <= 0) return { picked: false, level: 0, tag: "" };
+      const topIdx = state.wall.length - 1;
+      if (bestIdx !== topIdx) {
+        const tmp = state.wall[topIdx];
+        state.wall[topIdx] = state.wall[bestIdx];
+        state.wall[bestIdx] = tmp;
+      }
+      return { picked: true, level: bestLevel, tag: bestTag };
+    }
+
+    async function usePeekPower() {
       if (state.power.peek <= 0 || state.winner) return;
       if (els.peekBtn.classList.contains("power-use-shake")) return;
+      const choices = [1, 2, 3].filter((i) => !isBloodOut(i));
+      if (!choices.length) {
+        addLog("天眼窥牌取消：当前没有可选AI。", "warn");
+        return;
+      }
+      const seat = await openPeekChoiceDialog(choices);
+      if (![1, 2, 3].includes(seat) || isBloodOut(seat)) {
+        addLog("天眼窥牌已取消。", "warn");
+        return;
+      }
       shakePowerButton(els.peekBtn, () => {
         state.power.peek--;
-        const top = state.wall.slice(-3).map(tileText).reverse();
-        addLog(`天眼窥牌：${top.join(" / ") || "牌墙不足"}`, "ok");
+        const token = `peek_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+        state.peekRevealToken = token;
+        state.peekRevealSeat = seat;
+        const handTxt = (state.players[seat] && Array.isArray(state.players[seat].hand))
+          ? state.players[seat].hand.map(tileText).join(" ")
+          : "";
+        addLog(`天眼窥牌：已翻开 ${PLAYER_NAMES[seat]} 全部暗牌。${handTxt ? `（${handTxt}）` : ""}`, "ok");
         showFx("天眼窥牌", "ok");
         playSfx("power");
         render();
@@ -9928,6 +10383,11 @@ const POWER_SHIELD_B64 =
     function useRerollPower() {
       if (!canHumanUseRerollPower()) return;
       if (els.rerollBtn.classList.contains("power-use-shake")) return;
+      const picked = pickRerollBestWallTile();
+      if (picked.picked) {
+        state.disableSenseiBlockOnce = true;
+        addLog(`改运换摸触发：按优先级发牌（胡>杠>碰>吃>对子），本次命中「${picked.tag}」。`, "ok");
+      }
       if (state.phase === "draw" && humanAutoDrawTimer !== null) {
         clearTimeout(humanAutoDrawTimer);
         humanAutoDrawTimer = null;
@@ -9957,13 +10417,99 @@ const POWER_SHIELD_B64 =
       });
     }
 
-    function useShieldPower() {
-      if (state.power.shield <= 0 || state.turn !== 0 || state.winner || state.shieldActiveUntilPlayerDiscard) return;
+    async function useShieldPower() {
+      if (state.power.shield <= 0 || state.turn !== 0 || state.winner) return;
       if (els.shieldBtn.classList.contains("power-use-shake")) return;
+      const human = state.players[0];
+      if (!human || !Array.isArray(human.hand) || human.hand.length < 3) {
+        addLog("静默结界失败：手牌不足3张。", "warn");
+        return;
+      }
+      const sourceKind = await chooseShieldSourceKind();
+      if (!sourceKind) {
+        addLog("静默结界已取消。", "warn");
+        return;
+      }
+
+      sortTiles(human.hand);
+      const pickedDiscardIndices = await chooseThreeDiscardIndicesDialog(human.hand);
+      if (!pickedDiscardIndices || pickedDiscardIndices.length !== 3) {
+        addLog("静默结界已取消：未完成三张弃牌选择。", "warn");
+        return;
+      }
+
+      const owner = await chooseShieldTargetOwner();
+      if (!Number.isInteger(owner) || owner < 1 || owner > 3 || isBloodOut(owner)) {
+        addLog("静默结界已取消：目标玩家无效。", "warn");
+        return;
+      }
+
+      let stolen = null;
+      let stealDesc = "";
+      let meldCandidate = null;
+      let handSteal = null;
+      if (sourceKind === "meld") {
+        const candidates = buildShieldMeldCandidates(owner);
+        if (!candidates.length) {
+          addLog(`${PLAYER_NAMES[owner]} 当前没有可夺取的门前副露。`, "warn");
+          return;
+        }
+        const choose = await chooseShieldMeldCandidate(candidates);
+        if (!Number.isInteger(choose) || choose < 0 || choose >= candidates.length) {
+          addLog("静默结界已取消：未选择有效副露。", "warn");
+          return;
+        }
+        meldCandidate = candidates[choose];
+        stolen = [...meldCandidate.meld];
+        stealDesc = `夺取 ${PLAYER_NAMES[owner]} 的副露 ${stolen.map(tileText).join("")}`;
+      } else {
+        const got = pickShieldStealFromHands(owner);
+        if (!got || !Array.isArray(got.tiles) || !got.tiles.length) {
+          addLog("静默结界失败：无法从目标手里夺取牌。", "warn");
+          return;
+        }
+        handSteal = got;
+        stolen = [...got.tiles];
+        stealDesc = `${PLAYER_NAMES[owner]} 手里夺取(${got.mode}) ${stolen.map(tileText).join("")}`;
+      }
+
       shakePowerButton(els.shieldBtn, () => {
         state.power.shield--;
-        state.shieldActiveUntilPlayerDiscard = true;
-        addLog("静默结界展开：到你下一次出牌前，AI无法吃碰胡你的弃牌。", "ok");
+        const removed = [];
+        pickedDiscardIndices
+          .sort((a, b) => b - a)
+          .forEach((idx) => {
+            const tile = human.hand.splice(idx, 1)[0];
+            if (tile) {
+              removed.push(tile);
+              state.discards[0].push(tile);
+            }
+          });
+        const ownerPlayer = state.players[owner];
+        if (sourceKind === "meld" && meldCandidate && ownerPlayer && Array.isArray(ownerPlayer.melds)) {
+          const removedMeld = ownerPlayer.melds.splice(meldCandidate.meldIndex, 1)[0];
+          if (removedMeld && removedMeld.length) stolen = [...removedMeld];
+          ownerPlayer.openedMelds = Math.max(0, (ownerPlayer.openedMelds || 0) - 1);
+        } else if (sourceKind === "hand" && handSteal && Array.isArray(handSteal.tiles) && Array.isArray(handSteal.from)) {
+          for (let i = 0; i < handSteal.tiles.length; i++) {
+            const seat = handSteal.from[i];
+            const tile = handSteal.tiles[i];
+            const hp = state.players[seat];
+            if (!hp || !Array.isArray(hp.hand)) continue;
+            removeOneFromHand(hp.hand, tile);
+          }
+        }
+        human.melds.push([...stolen]);
+        human.openedMelds = (human.openedMelds || 0) + 1;
+        if (stolen.length >= 4) {
+          human.kongStats = human.kongStats || { concealed: 0, exposed: 0, added: 0 };
+          human.kongStats.exposed = (human.kongStats.exposed || 0) + 1;
+        }
+        sortTiles(human.hand);
+        addLog(
+          `静默结界：弃置 ${removed.map(tileText).join("、")}，${stealDesc}。`,
+          "ok"
+        );
         showFx("静默结界", "ok");
         playSfx("power");
         render();
@@ -9975,15 +10521,19 @@ const POWER_SHIELD_B64 =
         clearTimeout(humanAutoDrawTimer);
         humanAutoDrawTimer = null;
       }
-      state.power.peek = 3;
-      state.power.reroll = 3;
-      state.power.shield = 3;
+      state.power.peek = 0;
+      state.power.reroll = 0;
+      state.power.shield = 0;
+      state.noHuStreak = 0;
+      state.peekRevealSeat = -1;
+      state.peekRevealToken = "";
+      state.disableSenseiBlockOnce = false;
       els.peekBtn.classList.remove("power-use-shake");
       els.rerollBtn.classList.remove("power-use-shake");
       els.shieldBtn.classList.remove("power-use-shake");
-      els.peekBtn.style.display = "";
-      els.rerollBtn.style.display = "";
-      els.shieldBtn.style.display = "";
+      els.peekBtn.style.display = "none";
+      els.rerollBtn.style.display = "none";
+      els.shieldBtn.style.display = "none";
       state.round = 0;
       state.handNo = 1;
       state.dealer = 0;
@@ -10024,9 +10574,15 @@ const POWER_SHIELD_B64 =
     }
 
     function startTestHand() {
-      if (!state.allowTestHand) return;
       els.settlementMask.classList.remove("show");
       startHand();
+      state.power.peek = POWER_MAX_USES;
+      state.power.reroll = POWER_MAX_USES;
+      state.power.shield = POWER_MAX_USES;
+      addLog(
+        "测试局充能：天眼/改运/静默 -> 3/3/3",
+        "ok"
+      );
       const pool = collectAllTilesFromState();
       const work = [...pool];
       for (const t of TEST_SIANKE_HAND) {
@@ -10322,8 +10878,14 @@ const POWER_SHIELD_B64 =
         if (e.target === els.introMask) closeIntro();
       });
     }
+    if (els.choiceMask) {
+      els.choiceMask.addEventListener("click", (e) => {
+        if (e.target === els.choiceMask) closeChoiceDialog();
+      });
+    }
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && els.introMask && els.introMask.classList.contains("show")) closeIntro();
+      if (e.key === "Escape" && els.choiceMask && els.choiceMask.classList.contains("show")) closeChoiceDialog();
     });
     window.addEventListener("resize", () => {
       scheduleMobileFitReflow();
